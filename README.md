@@ -45,7 +45,7 @@ echo "Loading $TEMPLATE_PROFILE"
 ######## IMPORT ##########
 ##########################
 ```
-6. Create a new profile by copying .template_profile into a new file and changing the word template. Change the word template in the name as well as on lines 2 & 3.
+6. Create a new profile by copying .template_profile into a new file, changing the word template, and adding content. Change the word template in the name as well as on lines 2 & 3.
 7. Source your .bash_profile (`source ~/.bash_profile`) or restart your terminal and all profiles in .profiles should load. You should see output like
 ```
 Loading additional profiles
