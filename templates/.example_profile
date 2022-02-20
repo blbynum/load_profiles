@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+EXAMPLE_PROFILE=$BASH_SOURCE
+echo "Loading $EXAMPLE_PROFILE"
+
+##########################
+########## VARS ##########
+##########################
+
+export TEMPLATES="$LOADPROF_HOME/templates"
+
+##########################
+########## PATH ##########
+##########################
+
+#export PATH=$PATH:$TEMPLATES
+
+##########################
+########## FUNC ##########
+##########################
+
+# prints sarcastic version of input text
+get_sarcastic() {
+    text=$1
+    text_s=""
+    for (( i=0; i<${#text}; i++ )); do
+        char="${text:$i:1}"
+        if [[ "$char" == *[a-z]* ]];then
+            case=$(($RANDOM%2))
+            if [[ $case -eq 0 ]];then
+                new_char=$(echo $char | tr '[:upper:]' '[:lower:]')
+            else
+                new_char=$(echo $char | tr '[:lower:]' '[:upper:]' )
+            fi
+        else
+            new_char=$char
+        fi
+        text_s+=$new_char
+    done
+    echo "$text_s"
+}
+
+##########################
+######### ALIAS ##########
+##########################
+
+alias sarcasm="get_sarcastic"
+
+##########################
+######## IMPORT ##########
+##########################
+
+#. ../some_other_script.sh
+
