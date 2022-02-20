@@ -5,17 +5,10 @@ export PROFILES_HOME="$HOME/.profiles"
 profiles_temp="$LOADPROFS_HOME/temp"
 declare -A profiles
 
-create_profiles_dir() {
-    if [ ! -d $PROFILES_HOME ];then
-        echo "Creating ~/.profiles directory with example profile."
-        mkdir "$PROFILES_HOME"
-        cp $LOADPROFS_HOME/../templates/.example_profile $PROFILES_HOME/
-    fi
-}
-
 get_profiles() {
     profile_pattern="$PROFILES_HOME\/.(.+)_profile"
 
+    profiles=()
     for filename in $(find $PROFILES_HOME -type f);do
         if [[ $filename =~ $profile_pattern ]];then
             name="${BASH_REMATCH[1]}"
@@ -59,14 +52,6 @@ load() {
     echo ""
 }
 
-loadprof_init() {
-    echo ""
-    echo "Initializing loadprof"
-    get_profiles
-    #create_profiles_dir
-    load
-}
-
 make_profile() {
     name=$1
     lname=$(echo $name | tr '[:upper:]' '[:lower:]')
@@ -77,7 +62,26 @@ make_profile() {
 
     sed "s/TEMPLATE/$uname/g" "$LOADPROFS_HOME/templates/.template_profile" > "$PROFILES_HOME/.${lname}_profile"
     
-    loadprof_init
+    echo "Sourcing profiles..."
+    get_profiles
+    load
+}
+
+create_profiles_dir() {
+    if [ ! -d $PROFILES_HOME ];then
+        echo "Creating ~/.profiles directory with example profile."
+        mkdir "$PROFILES_HOME"
+        cp $LOADPROFS_HOME/templates/.example_profile $PROFILES_HOME/
+        make_profile main
+    fi
+}
+
+loadprof_init() {
+    echo ""
+    echo "Initializing loadprof"
+    create_profiles_dir
+    get_profiles
+    load
 }
 
 
