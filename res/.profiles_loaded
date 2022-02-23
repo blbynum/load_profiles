@@ -1,0 +1,1 @@
+declare -A profiles=([nerdbot]="/Users/benbynum/.profiles/.nerdbot_profile" [audio]="/Users/benbynum/.profiles/.audio_profile" [lp]="/Users/benbynum/.profiles/.lp_profile" [sv]="/Users/benbynum/.profiles/.sv_profile" [main]="/Users/benbynum/.profiles/.main_profile" )

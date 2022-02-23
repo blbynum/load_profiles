@@ -1,0 +1,60 @@
+#!/usr/local/env bash
+
+echo ""
+
+export PROFILES="$HOME/.profiles"
+
+if [ ! -f "$LOADPROFS_HOME/bin/loadprofs.sh"  ]; then
+    echo "ERROR: File $LOADPROFS_HOME/bin/loadprofs.sh not found. Cannot load profiles. Please check laodprofs installation and restart terminal."
+else 
+    alias loadprofs="$LOADPROFS_HOME/bin/loadprofs.sh"
+
+    declare -A profiles
+    profiles=()
+    
+    # create ~/.profiles directory
+    if [ ! -d $PROFILES ];then
+        echo "Creating ~/.profiles directory with example profile."
+        mkdir "$PROFILES"
+        cp $LOADPROFS_HOME/templates/.example_profile $PROFILES/
+    fi
+    
+    # clear existing profiles files
+    if [ -f $PROFILES/.profiles_loaded ];then
+        rm $PROFILES/.profiles_loaded
+    fi
+    
+    # get profiles and save to file
+    echo "Finding profiles in $PROFILES"
+    for filename in $(find $PROFILES -type f);do
+        if [[ $filename =~ $PROFILES\/.(.+)_profile ]];then
+            profiles["${BASH_REMATCH[1]}"]=$filename
+        fi
+    done
+    declare -p profiles > $PROFILES/.profiles_loaded
+    
+    if [ ${#profiles[@]} == 0 ];then
+        echo "No profiles found in $PROFILES/"
+    else
+        echo "Profiles found: { ${!profiles[@]} }"
+        
+        # load profiles
+        echo ""
+        echo "Loading profiles"
+        for profile in "${!profiles[@]}"; do
+            # load profile if it exists
+            if [ -f ${profiles[${profile}]} ];then
+                . ${profiles[${profile}]}
+            else
+                echo "ERROR: ${profiles[${profile}]} not found. Skipping"
+            fi
+            # create alias for editing file
+            alias vp_${profile}="vim ${profiles[${profile}]}"
+        done
+    fi
+fi
+
+unset profiles
+
+echo ""
+
