@@ -13,8 +13,8 @@ fi
 
 rsync -av --exclude='install.sh' --exclude='res' --exclude='.git' --exclude='.git*' ./ $LOADPROFS_HOME/ 
 
-first='export LOADPROFS_HOME="$LOADPROFS_HOME"'
-second='. $LOADPROFS_HOME/bin/.loadprofs_profile'
+first="export LOADPROFS_HOME="$LOADPROFS_HOME""
+second=". $LOADPROFS_HOME/bin/.loadprofs_profile"
 
 echo -e $first >> $bash_profile
 echo -e $second >> $bash_profile
