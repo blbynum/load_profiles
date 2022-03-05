@@ -7,7 +7,8 @@ Usage: $0 [options]
 Loadprof enables the use multiple bash profiles with minimal overhead.
 
 Available arguments:
--h| --help                  Print this message.
+-h|--help                   Print this message
+-v|-version                 Get the credits
 -l|--list                   List currently-loaded profiles
 -n|--new <profile_name>     Create a new profile in the .profiles directory
 EOF
@@ -17,6 +18,10 @@ if [ $# -eq 0 ];then
     usage
     exit 1
 fi
+
+property() {
+    grep "$1" $LOADPROFS_HOME/res/loadprofs.properties | cut -d '=' -f2
+}
 
 profiles_temp="$LOADPROFS_HOME/temp"
 pl=$PROFILES/.profiles_loaded
@@ -143,6 +148,11 @@ while [[ $# -gt 0 ]]; do
 #            ;;
         -h|--help)
             usage
+            shift
+            ;;
+        -v|--version)
+            echo "Loadprofs v$(property lp.version)"
+            echo "$(property lp.author) - $(property lp.url)"
             shift
             ;;
         --default)

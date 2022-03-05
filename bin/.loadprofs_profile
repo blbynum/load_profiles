@@ -1,6 +1,7 @@
 #!/usr/local/env bash
 
 echo ""
+echo "Running Loadproafs v$(grep 'lp.version' $LOADPROFS_HOME/res/loadprofs.properties | cut -d '=' -f2)"
 
 export PROFILES="$HOME/.profiles"
 
