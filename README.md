@@ -39,5 +39,5 @@ If you've never used vim, check out https://opensource.com/article/19/3/getting-
 # Tips
 * Each command has a short command. For example, instead of running `loadprofs list`, you could run `loadprofs -l`. See `loadprofs help` for more.
 * You may find it helpful to set an alias for sourcing your bash profile, such as `alias src="source $HOME/.bash_profile"`"
-* Take note of the line in each profile with `#order=2` (the number may be different). Profiles will load beginning with profiles with order 1 and going up. This allows you to have dependencies in other profiles. Profiles may share order numbers.
+* Take note of the line in each profile with `#order=2` (the number may be different). Profiles will load beginning with profiles with order 1 and going up. This allows you to have dependencies in other profiles. Profiles may share order numbers. It's best to keep the main profile as order 1 and give every other profile an order value of 2 or higher.
 
