@@ -14,6 +14,7 @@ get     | -g                    Load profiles
 list    | -l                    List currently-loaded profiles
 make    | -m    <profile>       Create a new profile in the .profiles directory
 edit    | -e    <profile>       Edit a profile with vim
+delete  | -d    <profile>       Delete a profile
 EOF
 }
 
@@ -204,7 +205,22 @@ reinit(){
     exec sudo --login --user "$USER" /bin/sh -c "cd '$PWD'; exec '$SHELL' -l"
 }
 
-#!/bin/bash
+delete_profile() {
+    profile=$1
+    
+    profile_exists $profile || { echo "Error: Profile $profile does not exist"; return 1; }
+
+    read -p "Are you absolutely sure you want to delete $profile? This action cannot be undone. (Y/n)" -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        echo "Removing:"
+        rm -v $PROFILES/.${profile}_profile
+    else
+        echo "Cancelling"
+    fi
+
+}
 
 POSITIONAL_ARGS=()
 
@@ -226,6 +242,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         -e|edit)
             edit_profile "$2"
+            shift
+            shift
+            ;;
+        -d|delete)
+            delete_profile "$2"
             shift
             shift
             ;;
