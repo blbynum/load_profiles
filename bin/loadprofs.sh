@@ -7,10 +7,12 @@ Usage: $0 [options]
 Loadprof enables the use multiple bash profiles with minimal overhead.
 
 Available arguments:
--h|--help                   Print this message
--v|-version                 Get the credits
--l|--list                   List currently-loaded profiles
--n|--new <profile_name>     Create a new profile in the .profiles directory
+help    | -h                    Print this message
+version | -v                    Get the credits
+
+list    | -l                    List currently-loaded profiles
+make    | -m    <profile>       Create a new profile in the .profiles directory
+edit    | -e    <profile>       Edit a profile with vim
 EOF
 }
 
@@ -60,6 +62,12 @@ get_profiles() {
     done
 
     declare -p profiles > $pl
+
+    if [ ${#profiles[@]} == 0 ];then
+        echo "No profiles found in $PROFILES/"
+    else
+        echo "Profiles found: { ${!profiles[@]} }"
+    fi
 }
 
 profiles_ls() {
@@ -88,9 +96,6 @@ load() {
         else
             echo "ERROR: $filename not found. Skipping"
         fi
-
-        # create alias for editing file
-        alias vp_${profile}="vim $filename"
     done
 
     echo ""
@@ -105,19 +110,39 @@ create_profiles_dir() {
     fi
 }
 
+profile_exists () {
+    # If the given key maps to a non-empty string (-n), the
+    # key obviously exists. Otherwise, we need to check if
+    # the special expansion produces an empty string or an
+    # arbitrary non-empty string.
+    [[ -n ${profiles[$1]} || -z ${profiles[$1]-foo} ]]
+}
+
 make_profile() {
     name=$1
     lname=$(echo $name | tr '[:upper:]' '[:lower:]')
     uname=$(echo $name | tr '[:lower:]' '[:upper:]')
-    
+    filename=$PROFILES/.${lname}_profile
+
+    profile_exists $name && { echo "Error: Profile $lname already exists"; return 1; }
     create_profiles_dir
     create_temp
 
-    sed "s/TEMPLATE/$uname/g" "$LOADPROFS_HOME/templates/.template_profile" > "$PROFILES/.${lname}_profile"
+    sed "s/TEMPLATE/$uname/g" "$LOADPROFS_HOME/templates/.template_profile" > "$filename"
     
-    echo "Sourcing profiles..."
-    get_profiles
-    load
+    vim $filename
+
+    echo "$lname profile created! Reload or source bash profile to load new profile"
+}
+
+edit_profile() {
+    name=$1
+    profile_exists $name || { "Error: Profile $name does not exist"; return 1; }
+    filename=${profiles[${name}]}
+
+    vim $filename
+
+    echo "$lname profile modified! Reload or source bash profile to load changes"
 }
 
 reinit(){
@@ -132,25 +157,30 @@ POSITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
     case $1 in
-        -n|--new)
+        -m|make)
             make_profile "$2"
             shift # past argument
             shift # past value
             ;;
-        -l|--list)
+        -l|list)
             profiles_ls
             shift # past argument
             ;;
-#        -r|--reset)
+        -e|edit)
+            edit_profile "$2"
+            shift
+            shift
+            ;;
+#        -r|reset)
 #            #reinit
 #            echo "Not yet implemented."
 #            shift
 #            ;;
-        -h|--help)
+        -h|help)
             usage
             shift
             ;;
-        -v|--version)
+        -v|version)
             echo "Loadprofs v$(property lp.version)"
             echo "$(property lp.author) - $(property lp.url)"
             shift

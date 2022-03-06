@@ -10,11 +10,11 @@ By calling loadprofs from your .bash_profile or equivelent file, you can manage 
 1. Go into the loadprofs directory by running `cd /path/to/loadprofs`.
 2. Run `sudo ./install.sh`. If prompted, enter your admin password.
 3. Restart the terminal or run `source ~/.bash_profile`.
-3. (Optional) Edit your main profile by typing `vp_main` or create more profiles with directions below.
+3. (Optional) Edit your main profile by typing `loadprofs edit main` or create more profiles with directions below.
 
 # Create A Profile
-1. Create a profile with the command `loadprofs -n test`. This will create a new profile called "test" and reload all profiles. Feel free to replace test with a name of your choice.
-2. Open up the new profile in vim by typing `vp_test`. If you used a name other than "test", replace "test" with the name you used.
+1. Create a profile with the command `loadprofs make <profile>` (i.e. `loadprofs make test`). This will create a new profile called "test" and reload all profiles. Feel free to replace test with a name of your choice.
+2. Open up the new profile in vim by typing `loadprofs edit profile`. If you used a name other than "test", replace "test" with the name you used.
 3. Source your .bash_profile (`source ~/.bash_profile`) - or restart your terminal - and all profiles in the ~/.profiles directory should load. You should see output like the following snippet (though your profiles and shell may be different).
 ```
 Initializing loadprof
@@ -28,7 +28,15 @@ Current shell: /usr/local/bin/bash
 4. (Optional) Create more profiles by repeating steps 1-3, replacing "main" with a name of your choice. 
 
 # List Profiles
-To list all currently-loaded profiles, run `loadprofs -l` or `loadprofs --list`
+To list all currently-loaded profiles, run `loadprofs list`.`
 
 # Editing Profiles
-Once loaded, an alias is created for editing each profile, based on it's name. The format for this alias is vp_{name}. For instance, if your profile file is called .audio_profile, the alias for editing is will be vp_audio. The "vp" stands for "vim profile".
+1. Edit a profile using `loadprofs edit <profile>` (i.e. `loadprofs edit main`). This will open the profile in vim.
+2. Reload your bash profile with `source ~/.bash_profile`
+
+If you've never used vim, check out https://opensource.com/article/19/3/getting-started-vim for help.
+
+# Tips
+* Each command has a short command. For example, instead of running `loadprofs list`, you could run `loadprofs -l`. See `loadprofs help` for more.
+* You may find it helpful to set an alias for sourcing your bash profile, such as `alias src="source $HOME/.bash_profile"`"
+
