@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#order=2
 
 EXAMPLE_PROFILE=$BASH_SOURCE
 echo "Loading $EXAMPLE_PROFILE"

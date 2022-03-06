@@ -10,6 +10,7 @@ Available arguments:
 help    | -h                    Print this message
 version | -v                    Get the credits
 
+get     | -g                    Load profiles
 list    | -l                    List currently-loaded profiles
 make    | -m    <profile>       Create a new profile in the .profiles directory
 edit    | -e    <profile>       Edit a profile with vim
@@ -26,12 +27,20 @@ property() {
 }
 
 profiles_temp="$LOADPROFS_HOME/temp"
-pl=$PROFILES/.profiles_loaded
-
+profiles_res=$PROFILES/resources
+pl=$profiles_res/.profiles_loaded
+po=$profiles_res/.profiles_ordered
+ho=$profiles_res/.highest_order
 
 declare -A profiles
 profiles=()
-. $pl
+[ -f $pl ] && . $pl
+
+declare -a ordered
+ordered=()
+[ -f $po ] && . $po
+
+[ -f $ho ] && highest_order=$(cat $ho)
 
 create_temp() {
     if [ ! -d "$profiles_temp" ];then
@@ -44,6 +53,39 @@ clear_profiles() {
         rm $pl
     fi
     profiles=()
+    if [ -f $po ];then
+        rm $po
+    fi
+    ordered=()
+    if [ -f $ho ];then
+        rm $ho
+    fi
+    highest_order=1
+}
+
+get_ordered() {
+    ordered=()
+    if [ ${#profiles[@]} == 0 ];then
+        echo "No profiles loaded"
+        exit 1
+    fi
+    
+    end=$((highest_order+1))
+    for ((i=1; i<=end; i++));do
+        for profile in ${!profiles[@]}; do
+            order=$(grep -s 'order' ${profiles[${profile}]} | cut -d '=' -f2)
+            if [[ "$order" -eq "$i" ]];then
+                ordered+=( $profile )      
+            fi
+            if [[ $i -eq $end ]];then
+                if [[ "$order" -eq "0" ]];then
+                    ordered+=( $profile )      
+                fi
+            fi
+        done
+    done
+
+    declare -p ordered > $po
 }
 
 get_profiles() {
@@ -57,22 +99,29 @@ get_profiles() {
     for filename in $(find $PROFILES -type f);do
         if [[ $filename =~ $profile_pattern ]];then
             name="${BASH_REMATCH[1]}"
-            profiles["$name"]=$filename
+            order=$(grep 'order' "$filename" | cut -d '=' -f2)
+            value="$filename $order"
+            profiles["$name"]="$value"
+            if [[ $order -gt $highest_order ]];then
+                highest_order=$order
+            fi
         fi
     done
 
     declare -p profiles > $pl
+    echo $highest_order > $ho
+    get_ordered
 
     if [ ${#profiles[@]} == 0 ];then
         echo "No profiles found in $PROFILES/"
     else
-        echo "Profiles found: { ${!profiles[@]} }"
+        echo "Profiles found: { ${ordered[*]} }"
     fi
 }
 
 profiles_ls() {
-    for profile in ${!profiles[@]}; do
-        echo "$profile"
+    for profile in ${ordered[@]}; do
+        echo "$(echo ${profiles[${profile}]} | cut -d ' ' -f2-) $profile"
     done
 }
 
@@ -87,8 +136,10 @@ clear_temp() {
 load() {
     echo "Loading profiles"
 
-    for profile in ${!profiles[@]}; do
-        filename=${profiles[${profile}]}
+    for profile in ${ordered[@]}; do
+        profile=${profiles[${profile}]}
+        filename="$(echo $profile| awk '{print $1;}')"
+        order=$(echo $profile| cut -d ' ' -f2-)
 
         # load profile if it exists
         if [ -f $filename ];then
@@ -106,7 +157,9 @@ create_profiles_dir() {
         echo "Creating ~/.profiles directory with example profile."
         mkdir "$PROFILES"
         cp $LOADPROFS_HOME/templates/.example_profile $PROFILES/
-        make_profile main
+        sed "s/TEMPLATE/MAIN/g" "$LOADPROFS_HOME/templates/.template_profile" > "$PROFILES/.main_profile_temp"
+        sed "s/#order=2/#order=1/g" "$PROFILES/.main_profile_temp" > "$PROFILES/.main_profile"
+        rm "$PROFILES/.main_profile_temp"
     fi
 }
 
@@ -157,6 +210,11 @@ POSITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
     case $1 in
+        -g|get)
+            get_profiles
+            load
+            shift
+            ;;
         -m|make)
             make_profile "$2"
             shift # past argument

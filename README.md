@@ -14,7 +14,7 @@ By calling loadprofs from your .bash_profile or equivelent file, you can manage 
 
 # Create A Profile
 1. Create a profile with the command `loadprofs make <profile>` (i.e. `loadprofs make test`). This will create a new profile called "test" and reload all profiles. Feel free to replace test with a name of your choice.
-2. Open up the new profile in vim by typing `loadprofs edit profile`. If you used a name other than "test", replace "test" with the name you used.
+2. Open up the new profile in vim by typing `loadprofs edit <profile>` and add whatever edits you would like. For an example, see the file .example_profile. Feel free to delete this profile.
 3. Source your .bash_profile (`source ~/.bash_profile`) - or restart your terminal - and all profiles in the ~/.profiles directory should load. You should see output like the following snippet (though your profiles and shell may be different).
 ```
 Initializing loadprof
@@ -39,4 +39,5 @@ If you've never used vim, check out https://opensource.com/article/19/3/getting-
 # Tips
 * Each command has a short command. For example, instead of running `loadprofs list`, you could run `loadprofs -l`. See `loadprofs help` for more.
 * You may find it helpful to set an alias for sourcing your bash profile, such as `alias src="source $HOME/.bash_profile"`"
+* Take note of the line in each profile with `#order=2` (the number may be different). Profiles will load beginning with profiles with order 1 and going up. This allows you to have dependencies in other profiles. Profiles may share order numbers.
 
