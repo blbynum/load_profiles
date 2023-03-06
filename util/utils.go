@@ -84,7 +84,31 @@ func PrintProfiles(profiles map[string]int) {
 		return profiles[keys[i]] < profiles[keys[j]]
 	})
 
+	fmt.Println(`Profiles currently loaded:`)
+	fmt.Println(`order | profile`)
+	fmt.Println(`---------------`)
+	var template = `   %d  | %s`
+
 	for _, k := range keys {
-		fmt.Println(profiles[k], k)
+		fmt.Println(fmt.Sprintf(template, profiles[k], k))
+		//fmt.Println(profiles[k], k)
 	}
+}
+
+func CreateProfileCustomOrder(name string, order string) {
+	fmt.Println(fmt.Sprintf("New Profile Created: profile=%s, order=%s", name, order))
+}
+
+func CreateProfile(name string) {
+	fmt.Println(fmt.Sprintf("New Profile Created: profile=%s, order=%d", name, 2))
+}
+
+func EditProfile(name string) {
+	// TODO: Open profile in default text editor
+	fmt.Println(fmt.Sprintf("Edit Profile: profile=%s", name))
+}
+
+func DeleteProfile(name string) {
+	// TODO: "Are you sure?" prompt
+	fmt.Println(fmt.Sprintf("Delete Profile: profile=%s", name))
 }
