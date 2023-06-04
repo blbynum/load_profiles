@@ -1,6 +1,10 @@
 # loadprofs.sh
 **Load more bash profiles!**
 
+## NOTICE: As of 06/04/2023, loadprofs has been replaced by [prof](https://github.com/blbynum/prof), a smoother, portable version of loadprofs. There will be no further updates to loadprofs.
+
+# Overview
+
 By calling loadprofs from your .bash_profile or equivelent file, you can manage several bash profile files all at once. Fill a folder with files full of functions and aliases! loadprofs.sh will both load each file, as well as create an alias for editing each file. 
 
 # Requirements
